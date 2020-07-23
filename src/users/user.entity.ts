@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinTable, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinTable, JoinColumn, OneToMany } from "typeorm";
 import { UserProfile} from "src/user-profile/user-profile.entity";
+import { Platform } from "src/platform/platform.entity";
+import { platform } from "os";
 
 @Entity('user')
 export class User {
@@ -16,5 +18,8 @@ export class User {
   @OneToOne(type => UserProfile)
   @JoinColumn({ name: 'profile_id' })
   profile: UserProfile;
+
+  @OneToMany(type => Platform, platform => platform.user)
+  platforms: Platform[]
 
 }

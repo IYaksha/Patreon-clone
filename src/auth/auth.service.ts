@@ -32,7 +32,6 @@ export class AuthService {
   async login (user: any) {
     const payload = { email: user.email, id: user.id };
     const currentUserDetails = await this.userService.findOne(user.email);
-    console.log(currentUserDetails);
     return {
       email: user.email,
       id: user.id,
@@ -47,6 +46,10 @@ export class AuthService {
     } else {
       throw new HttpException('User already exists', 400);
     }
+  }
+
+  async getUser (user:any) {
+    return this.userService.findOne(user.email);
   }
 
 }

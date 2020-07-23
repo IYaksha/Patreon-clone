@@ -33,8 +33,7 @@ export class AuthController {
   @UseGuards(JwtAuthGaurd)
   @Get('test')
   async test(@Request() req) {
-    console.log(req.body, req.params, req.ip, req.user);
-    return { test: 'world' };
+    return this.authService.getUser(req.user);
   }
 
 }
