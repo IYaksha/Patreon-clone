@@ -1,6 +1,9 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, HttpException, HttpCode, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
+import { UserDTO } from 'src/users/user.dto';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -10,22 +13,38 @@ export class AuthService {
   ) {}
 
   async validateUser (username: string, password: string) {
-    const foundUser = await this.userService.findUser(username);
+    const foundUser = await this.userService.findOne(username);
     if (!foundUser) {
-      return null;
-    } else if (foundUser && foundUser.password === password) {
-      const { password, ...user } = foundUser;
-      return user;
+      throw new HttpException('Wrong email or password', HttpStatus.FORBIDDEN);
     } else {
-      return null;
+      const isPasswordCorrect = await bcrypt.compare(password, foundUser.password);
+      if (isPasswordCorrect) {
+        return {
+          id: foundUser.id,
+          email: foundUser.email,
+        }
+      } else {
+        throw new HttpException('Wrong email or password', HttpStatus.FORBIDDEN);
+      }
     }
   }
 
   async login (user: any) {
-    const payload = { username: user.username, userId: user.userId };
+    const payload = { email: user.email, id: user.id };
     return {
+      email: user.email,
+      id: user.id,
       accessToken: this.jwtService.sign(payload),
     };
+  }
+
+  async signup (userCredentials: UserDTO): Promise<User> {
+    const foundUser = await this.userService.findOne(userCredentials.email);
+    if (!foundUser) {
+      return this.userService.create(userCredentials);
+    } else {
+      throw new HttpException('User already exists', 400);
+    }
   }
 
 }

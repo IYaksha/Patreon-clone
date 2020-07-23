@@ -1,3 +1,5 @@
+import { User } from "src/users/user.entity";
+
 export const typeOrmConfig: any = {
   type: 'mysql',
   host: 'localhost',
@@ -5,7 +7,7 @@ export const typeOrmConfig: any = {
   username: 'admin',
   password: 'root',
   database: 'patreon',
-  entities: ['*/*.entity.ts'],
+  entities: [User],
   synchronize: true,
 }
 
