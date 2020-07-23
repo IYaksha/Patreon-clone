@@ -13,9 +13,27 @@ export class UserProfileService {
     @InjectRepository(User)
     private userRepository: Repository<User>
   ) {}
-  async createUserProfile (userId: string, userProfileDTO: UserProfileDTO): Promise<UserProfile> {
-    const userProfileObj = await this.userProfileRepository.save(userProfileDTO);
-    await this.userRepository.update({ id: userId }, { profileId: userProfileObj.profileId });
-    return userProfileObj;
-	}
+  async createUserProfile (
+    userId: string, 
+    userProfileDTO: UserProfileDTO
+  ): Promise<any> {
+    const newUserProfile = new UserProfile();
+    const currentUser = await this.userRepository.findOne({ where: { id: userId }});
+    newUserProfile.firstName = userProfileDTO.firstName;
+    newUserProfile.middleName = userProfileDTO.middleName;
+    newUserProfile.lastName = userProfileDTO.lastName;
+    newUserProfile.user = currentUser;
+    await this.userProfileRepository.save(newUserProfile);
+    currentUser.profile = newUserProfile;
+    await this.userRepository.save(currentUser);
+    return {
+      id: newUserProfile.id,
+      ...userProfileDTO
+    };
+  }
+  async getUserProfile (
+    userId: string
+  ): Promise<any> {
+    return this.userProfileRepository.find({ where: { user: userId }, relations: ['user'] });
+  }
 }

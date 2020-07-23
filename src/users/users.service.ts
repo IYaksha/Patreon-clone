@@ -16,7 +16,7 @@ export class UsersService {
     return this.userRepository.find();
   }
   async findOne (email: string): Promise<Partial<User>> {
-    return this.userRepository.findOne({ where: { email }});
+    return this.userRepository.findOne({ where: { email }, relations: ['profile']});
   }
   async create (userCredentials: UserDTO): Promise<User> {
     userCredentials.password = await bcrypt.hash(userCredentials.password, this.saltRounds);

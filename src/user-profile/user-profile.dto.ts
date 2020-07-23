@@ -14,4 +14,8 @@ export class UserProfileDTO {
   @IsString()
   lastName: string
 
+  @IsOptional()
+  @IsString()
+  userId: string
+
 }
