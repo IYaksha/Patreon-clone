@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import {typeOrmConfig} from 'config/typeorm.config';
 import { User } from './users/user.entity';
+import { UserProfileModule } from './user-profile/user-profile.module';
+import { UserProfile } from './user-profile/user-profile.entity';
 
 @Module({
   imports: [
@@ -17,11 +19,11 @@ import { User } from './users/user.entity';
       username: 'admin',
       password: 'root',
       database: 'patreon',
-      entities: [User],
+      entities: [User, UserProfile],
       synchronize: true,
     }),
     AuthModule, 
-    UsersModule,
+    UsersModule, UserProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
